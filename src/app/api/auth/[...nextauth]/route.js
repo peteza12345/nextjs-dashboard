@@ -7,30 +7,33 @@ import bcrypt from 'bcryptjs'
 const authOptions = {
    providers: [
       CredentialsProvider({
+   
          name: 'credentials',
          credentials: {},
          async authorize(credentials, req) {
+
             const { email, password } = credentials;
 
             try {
-               await connectMongoDB(process.env.MONGODB_URI);
+               await connectMongoDB();
                const user = await User.findOne({ email });
 
                if (!user) {
-                  throw new Error("No user found with the provided email.");
+                  return null;
                }
 
                const passwordMatch = await bcrypt.compare(password, user.password);
 
                if (!passwordMatch) {
-                  throw new Error("Invalid password.");
+                  return null;
                }
 
                return user;
+
             } catch (error) {
-               console.error("Error in authorization:", error);
-               return null;
+               console.log(error)
             }
+
          }
       })
    ],
@@ -42,17 +45,26 @@ const authOptions = {
       signIn: "/login"
    },
    callbacks: {
-      async jwt({ token, user }) {
+      async jwt({ token, user, session }) {
          if (user) {
-            token.id = user.id;
-            token.role = user.role;
+            return {
+               ...token,
+               id: user.id,
+               role: user.role
+            }
          }
+
          return token;
       },
-      async session({ session, token }) {
-         session.user.id = token.id;
-         session.user.role = token.role;
-         return session;
+      async session({ session, user, token }) {
+         return {
+            ...session,
+            user: {
+               ...session.user,
+               id: token.id,
+               role: token.role
+            }
+         }
       }
    }
 };
