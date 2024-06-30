@@ -38,11 +38,11 @@ function LoginPage() {
    };
 
    useEffect(() => {
-      if (status === "loading") return <p>Loding...</p>;
       if (status === 'authenticated' && session?.user?.role !== "admin") router.replace("/welcome");
       if (status === 'authenticated' && session?.user?.role === "admin") router.replace("/admin");
    }, [session, status, router]);
-
+   
+   if (status === "loading") return <p>Loding...</p>;
 
    return (
       <Container>

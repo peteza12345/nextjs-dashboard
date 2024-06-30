@@ -2,7 +2,7 @@ import { connectMongoDB } from "../../../../../lib/mongodb";
 import Post from "../../../../../models/post";
 import { NextResponse } from "next/server";
 
-export async function GET(req, { params }) {
+export async function GET(req, res, { params }) {
     const { id } = params;
 
     await connectMongoDB();
@@ -11,7 +11,7 @@ export async function GET(req, { params }) {
     return NextResponse.json({ post }, { status: 200 });
 };
 
-export async function PUT(req, { params }) {
+export async function PUT(req, res, { params }) {
     const { id } = params;
     const { newTitle: title, newImg: img, newContent: content } = await req.json();
 

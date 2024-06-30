@@ -3,7 +3,7 @@ import Post from '../../../../models/post'
 import { NextResponse } from "next/server";
 
 
-export async function POST(req) {
+export async function POST(req, res) {
     const { title, img, content, userEmail } = await req.json();
 
     await connectMongoDB();
@@ -12,7 +12,7 @@ export async function POST(req) {
     return NextResponse.json({ message: "Post created" }, { status: 201 });
 };
 
-export async function GET(req) {
+export async function GET(req, res) {
     const userEmail = req.nextUrl.searchParams.get("email");
 
     await connectMongoDB();
@@ -21,7 +21,7 @@ export async function GET(req) {
     return NextResponse.json({ posts }, { status: 200 });
 };
 
-export async function DELETE(req) {
+export async function DELETE(req, res) {
     const id = req.nextUrl.searchParams.get("id");
 
     await connectMongoDB();
